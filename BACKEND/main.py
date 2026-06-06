@@ -1,20 +1,30 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, Header, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from datetime import datetime, UTC
+from dotenv import load_dotenv
 
+import os
 import sqlite3
 
 app = FastAPI()
 
+load_dotenv()
+API_KEY = os.getenv("API_KEY")
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:4200",
-                   "https://mlatonzea-forum.vercel.app"],
+    allow_origins=["*"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"]
 )
+
+def verify_api_key(x_api_key: str = Header(None)):
+    print("HEADER RECEIVED:", repr(x_api_key))
+    print("EXPECTED KEY:", API_KEY)
+    if x_api_key != API_KEY:
+        raise HTTPException(status_code=401, detail="INVALID API key")
 
 @app.on_event("startup")
 def startup():
@@ -42,7 +52,9 @@ def root():
     return {"message": "API is working!"}
 
 @app.get("/posts")
-def get_posts():
+def get_posts(x_api_key: str = Header(None)):
+    verify_api_key(x_api_key)
+
     with sqlite3.connect("forum.db") as conn:
         cursor = conn.cursor()
 
@@ -59,7 +71,9 @@ def get_posts():
         return posts
 
 @app.post("/posts")
-def create_post(post: Post):
+def create_post(post: Post, x_api_key: str = Header(None)):
+    verify_api_key(x_api_key)
+
     with sqlite3.connect("forum.db") as conn:
         cursor = conn.cursor()
         timestamp = datetime.now(UTC).strftime("%d/%m/%Y %H:%M:%S")

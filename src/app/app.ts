@@ -1,7 +1,12 @@
 import { Component } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { FormsModule } from '@angular/forms';
 import { OnInit, ChangeDetectorRef } from '@angular/core';
+import { environment } from './environment';
+
+const headers = new HttpHeaders({
+  'x-api-key': environment.apiKey
+});
 
 @Component({
   selector: 'app-root',
@@ -26,7 +31,9 @@ export class App implements OnInit {
   }
 
   loadPosts() {
-    this.http.get<any[]>("https://yellow-numbers-attend.loca.lt/posts")
+    this.http.get<any[]>("https://yellow-numbers-attend.loca.lt/posts",
+      { headers }
+    )
       .subscribe(data => {
         this.messages = data;
         this.cdr.detectChanges();
@@ -44,7 +51,9 @@ export class App implements OnInit {
       content: text
     }
 
-    this.http.post("https://yellow-numbers-attend.loca.lt/posts", payload)
+    this.http.post("https://yellow-numbers-attend.loca.lt/posts", payload,
+      { headers }
+    )
       .subscribe(() => {
         this.loadPosts();
       });
