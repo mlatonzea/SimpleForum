@@ -1,0 +1,36 @@
+<h1>Mini Forum</h1>
+
+<input
+  placeholder="Anonymous"
+  [(ngModel)]="username"
+/>
+
+<textarea
+  #messageInput
+  rows="4"
+  placeholder="Write a message..."
+  [(ngModel)]="messageText"
+></textarea>
+
+<br>
+
+<button (click)="postMessage(messageInput.value)">
+  Post
+</button>
+
+<hr>
+
+@for (message of messages; track message.id) {
+  <div class="post">
+    <div class="username">
+      {{ message.username }}
+    </div>
+    <div class="date">
+      {{ message.timestamp }}
+    </div>
+
+    <div class="content">
+      {{ message.content }}
+    </div>
+  </div>
+}
