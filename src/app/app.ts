@@ -26,7 +26,7 @@ export class App implements OnInit {
   }
 
   loadPosts() {
-    this.http.get<any[]>("https://something.loca.lt:8000/posts")
+    this.http.get<any[]>("https://yellow-numbers-attend.loca.lt/posts")
       .subscribe(data => {
         this.messages = data;
         this.cdr.detectChanges();
@@ -44,7 +44,7 @@ export class App implements OnInit {
       content: text
     }
 
-    this.http.post("https://something.loca.lt:8000/posts", payload)
+    this.http.post("https://yellow-numbers-attend.loca.lt/posts", payload)
       .subscribe(() => {
         this.loadPosts();
       });
